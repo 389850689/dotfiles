@@ -1,6 +1,31 @@
 #+title: Emacs Literate Config
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el
 
+* Package Management
+
+#+begin_src emacs-lisp
+
+  ;; Add melpa repo to package archives.
+  (require 'package)
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+
+  ;; Run autoloads on packages.
+  (package-initialize)
+
+  ;; Check if archive contents exist.
+  (unless package-archive-contents
+    (package-refresh-contents))
+
+  ;; Ensure that `use-package` is installed.
+  (unless (package-installed-p 'use-package)
+    (package-install 'use-package))
+
+
+  (require 'use-package)
+  (setq use-package-always-ensure t)
+
+#+end_src
+
 * GUI Modifcations
 
 *NOTE*: I use GUI here as in the "window" or window related widgets like the menubar, etc.
@@ -36,32 +61,19 @@
 
 #+begin_src emacs-lisp
 
+  ;; install `all-the-icons` font.
+  (use-package all-the-icons)
+
   (set-face-attribute 'default nil :font "Source Code Pro" :height 110)
 
 #+end_src
 
-* Package Management
+** Rich Presence 
 
 #+begin_src emacs-lisp
 
-  ;; Add melpa repo to package archives.
-  (require 'package)
-  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-
-  ;; Run autoloads on packages.
-  (package-initialize)
-
-  ;; Check if archive contents exist.
-  (unless package-archive-contents
-    (package-refresh-contents))
-
-  ;; Ensure that `use-package` is installed.
-  (unless (package-installed-p 'use-package)
-    (package-install 'use-package))
-
-
-  (require 'use-package)
-  (setq use-package-always-ensure t)
+  (use-package elcord
+    :init (elcord-mode))
 
 #+end_src
 
@@ -131,6 +143,28 @@ It's like nerd tree, but for emacs.
     (doom-themes-treemacs-config)
     ;; Corrects (and improves) org-mode's native fontification.
     (doom-themes-org-config))
+
+#+end_src
+
+** Centaur Tabs
+
+Tabline-esque package for Emacs.
+
+#+begin_src emacs-lisp
+
+  (use-package centaur-tabs
+    :demand
+    :config
+      (centaur-tabs-mode t)
+      (setq centaur-tabs-set-icons t)
+      (setq centaur-tabs-style "bar")
+      (setq centaur-tabs-height 32)
+      (setq centaur-tabs-set-bar 'left)
+      (setq centaur-tabs-gray-out-icons 'buffer)
+    :bind
+    (:map evil-normal-state-map
+      ("g t" . centaur-tabs-forward)
+      ("g T" . centaur-tabs-backward)))
 
 #+end_src
 
@@ -212,6 +246,15 @@ It's like nerd tree, but for emacs.
 
 #+end_src
 
+** Company Mode
+
+#+begin_src emacs-lisp
+
+  (use-package company
+    :init (global-company-mode))
+  
+#+end_src
+
 ** Helpful
 
 "A better Emacs \*help\* buffer"
@@ -242,13 +285,38 @@ It's like nerd tree, but for emacs.
 
 #+end_src
 
+** Language Server Protocol Related
+
+** Eglot
+
+#+begin_src emacs-lisp
+
+  (use-package eglot
+    ; this'll work for now, but should have a language specific list.
+    :hook (prog-mode . eglot-ensure))
+
+#+end_src
+
 * Language Specific
 
 ** Lisp
+
+Not technically `Lisp` specific, since I haven't set up the hooks yet, but we'll leave it here for now.
 
 #+begin_src emacs-lisp
 
   (use-package rainbow-delimiters
     :hook (prog-mode . rainbow-delimiters-mode))
+
+#+end_src
+
+** Clojure
+
+*TODO*: for now it seems like I could just do a likkle dolist, since no config I guess.
+
+#+begin_src emacs-lisp
+
+  (use-package clojure-mode)
+  (use-package cider)
 
 #+end_src
