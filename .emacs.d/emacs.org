@@ -7,6 +7,8 @@
 
 #+begin_src emacs-lisp
 
+  (setq inhibit-startup-message t)
+
   (tool-bar-mode -1)   ; disable toolbar.
   (scroll-bar-mode -1) ; disable scrollbar.
   (menu-bar-mode -1)   ; disable menubar.
@@ -84,6 +86,17 @@
   
 #+end_src
 
+** Neotree
+
+It's like nerd tree, but for emacs.
+
+#+begin_src emacs-lisp
+
+  (use-package neotree
+    :init (global-set-key [f8] 'neotree-toggle))
+
+#+end_src
+
 * User Interface
 
 ** Modeline
@@ -121,6 +134,24 @@
 
 #+end_src
 
+** Org Mode
+
+*** Auto Tangle on Save
+
+#+begin_src emacs-lisp
+
+  ;; Automatically tangle our emacs.org config file when we save it
+  (defun efs/org-babel-tangle-config ()
+    (when (string-equal (buffer-file-name)
+			(expand-file-name "~/.emacs.d/emacs.org"))
+      ;; Dynamic scoping to the rescue
+      (let ((org-confirm-babel-evaluate nil))
+	(org-babel-tangle))))
+
+  (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+  
+#+end_src
+
 ** Ivy
 
 "Ivy is an interactive interface for completion in Emacs. Emacs uses completion mechanism in a variety of contexts: code, menus, commands, variables, functions, etc." - Ivy User Manual
@@ -144,5 +175,80 @@
 	   ("C-k" . ivy-previous-line)
 	   ("C-d" . ivy-reverse-i-search-kill))
     :init (ivy-mode 1))
+
+#+end_src
+
+*** Ivy-Rich
+
+#+begin_src emacs-lisp
+
+  (use-package ivy-rich
+    :init (ivy-rich-mode 1))
+  
+#+end_src
+
+*** Swiper
+
+"Isearch with an overview. Oh, man!"
+
+#+begin_src emacs-lisp
+
+  (use-package swiper)
+
+#+end_src
+
+*** Counsel
+
+"Various completion functions using Ivy".
+
+#+begin_src emacs-lisp
+
+  (use-package counsel
+    :bind (("C-M-j" . 'counsel-switch-buffer)
+      :map minibuffer-local-map
+      ("C-r" . 'counsel-minibuffer-history))
+    :config
+    (counsel-mode 1))
+
+#+end_src
+
+** Helpful
+
+"A better Emacs \*help\* buffer"
+*NOTE*: Might move this over to the keybinds sections.
+
+#+begin_src emacs-lisp
+
+  (use-package helpful
+    :custom
+    (counsel-describe-function-function #'helpful-callable)
+    (counsel-describe-variable-function #'helpful-variable)
+    :bind
+    ([remap describe-function] . counsel-describe-function)
+    ([remap describe-command] . helpful-command)
+    ([remap describe-variable] . counsel-describe-variable)
+    ([remap describe-key] . helpful-key))
+
+#+end_src
+
+** Which-Key
+
+#+begin_src emacs-lisp
+
+  (use-package which-key
+    :init (which-key-mode)
+    :diminish which-key-mode
+    :config (setq which-key-idle-delay 0.1))
+
+#+end_src
+
+* Language Specific
+
+** Lisp
+
+#+begin_src emacs-lisp
+
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
 
 #+end_src
