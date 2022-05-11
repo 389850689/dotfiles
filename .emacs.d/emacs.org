@@ -1,0 +1,148 @@
+#+title Emacs Literate Config
+#+PROPERTY: header-args:emacs-lisp :tangle ./init.el
+
+* GUI Modifcations
+
+*NOTE*: I use GUI here as in the "window" or window related widgets like the menubar, etc.
+
+#+begin_src emacs-lisp
+
+  (tool-bar-mode -1)   ; disable toolbar.
+  (scroll-bar-mode -1) ; disable scrollbar.
+  (menu-bar-mode -1)   ; disable menubar.
+
+  ; enable line numbers.
+  (global-display-line-numbers-mode t)
+
+  ;; TODO: write a hook here to disable line numbers in org mode.
+
+#+end_src
+
+* Miscellaneous Settings
+
+** Autopairs
+
+#+begin_src emacs-lisp
+
+  (electric-pair-mode 1)
+
+#+end_src
+
+** Fonts
+
+*TODO*: find a way to enable font ligatures.
+
+#+begin_src emacs-lisp
+
+  (set-face-attribute 'default nil :font "Source Code Pro" :height 110)
+
+#+end_src
+
+* Package Management
+
+#+begin_src emacs-lisp
+
+  ;; Add melpa repo to package archives.
+  (require 'package)
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+
+  ;; Run autoloads on packages.
+  (package-initialize)
+
+  ;; Check if archive contents exist.
+  (unless package-archive-contents
+    (package-refresh-contents))
+
+  ;; Ensure that `use-package` is installed.
+  (unless (package-installed-p 'use-package)
+    (package-install 'use-package))
+
+
+  (require 'use-package)
+  (setq use-package-always-ensure t)
+
+#+end_src
+
+* Keybinds
+
+** Evil Mode
+
+#+begin_src emacs-lisp
+
+  ;; Install `evil mode`, which is a vim keybind emulator.
+  (use-package evil
+    :init (evil-mode 1))
+
+#+end_src
+
+** Misc. Keybinds
+
+#+begin_src emacs-lisp
+
+  ;; Escape key quits prompts.
+  (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+  
+#+end_src
+
+* User Interface
+
+** Modeline
+
+#+begin_src emacs-lisp
+
+;; Install `doom-modeline`, similar to airline from vim.
+(use-package doom-modeline
+  :init (doom-modeline-mode 1))
+
+#+end_src
+
+** Theme
+
+#+begin_src emacs-lisp
+
+  ;; Install and configure `doom-themes`
+  (use-package doom-themes
+    :ensure t
+    :config
+    ;; Global settings (defaults)
+    (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+	  doom-themes-enable-italic t) ; if nil, italics is universally disabled
+    (load-theme 'doom-one t)
+
+    ;; Enable flashing mode-line on errors
+    (doom-themes-visual-bell-config)
+    ;; Enable custom neotree theme (all-the-icons must be installed!)
+    (doom-themes-neotree-config)
+    ;; or for treemacs users
+    (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+    (doom-themes-treemacs-config)
+    ;; Corrects (and improves) org-mode's native fontification.
+    (doom-themes-org-config))
+
+#+end_src
+
+** Ivy
+
+"Ivy is an interactive interface for completion in Emacs. Emacs uses completion mechanism in a variety of contexts: code, menus, commands, variables, functions, etc." - Ivy User Manual
+
+#+begin_src emacs-lisp
+
+  ;; Install and configure keybinds for `Ivy`.
+  (use-package ivy
+    :diminish
+    :bind (("C-s" . swiper)
+	   :map ivy-minibuffer-map
+	   ("TAB" . ivy-alt-done)	
+	   ("C-l" . ivy-alt-done)
+	   ("C-j" . ivy-next-line)
+	   ("C-k" . ivy-previous-line)
+	   :map ivy-switch-buffer-map
+	   ("C-k" . ivy-previous-line)
+	   ("C-l" . ivy-done)
+	   ("C-d" . ivy-switch-buffer-kill)
+	   :map ivy-reverse-i-search-map
+	   ("C-k" . ivy-previous-line)
+	   ("C-d" . ivy-reverse-i-search-kill))
+    :init (ivy-mode 1))
+
+#+end_src
