@@ -32,16 +32,23 @@
 
 #+begin_src emacs-lisp
 
-  (setq inhibit-startup-message t)
+    (setq inhibit-startup-message t)
 
-  (tool-bar-mode -1)   ; disable toolbar.
-  (scroll-bar-mode -1) ; disable scrollbar.
-  (menu-bar-mode -1)   ; disable menubar.
+    (tool-bar-mode -1)   ; disable toolbar.
+    (scroll-bar-mode -1) ; disable scrollbar.
+    (menu-bar-mode -1)   ; disable menubar.
 
-  ; enable line numbers.
-  (global-display-line-numbers-mode t)
+    ; smooth scrolling
+    (setq redisplay-dont-pause t
+      scroll-margin 1
+      scroll-step 1
+      scroll-conservatively 10000
+      scroll-preserve-screen-position 1)
 
-  ;; TODO: write a hook here to disable line numbers in org mode.
+    ; enable line numbers.
+    (global-display-line-numbers-mode t)
+
+    ;; TODO: write a hook here to disable line numbers in org mode.
 
 #+end_src
 
@@ -72,8 +79,9 @@
 
 #+begin_src emacs-lisp
 
-  (use-package elcord
-    :init (elcord-mode))
+    (use-package elcord
+      :init (elcord-mode)
+      :config (setq elcord-editor-icon "doom_icon"))
 
 #+end_src
 
@@ -86,6 +94,12 @@
   ;; Install `evil mode`, which is a vim keybind emulator.
   (use-package evil
     :init (evil-mode 1))
+
+#+end_src
+
+** General
+
+#+begin_src emacs-lisp
 
 #+end_src
 
@@ -132,14 +146,14 @@ It's like nerd tree, but for emacs.
     ;; Global settings (defaults)
     (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
 	  doom-themes-enable-italic t) ; if nil, italics is universally disabled
-    (load-theme 'doom-one t)
+    (load-theme 'doom-nord t)
 
     ;; Enable flashing mode-line on errors
     (doom-themes-visual-bell-config)
     ;; Enable custom neotree theme (all-the-icons must be installed!)
     (doom-themes-neotree-config)
     ;; or for treemacs users
-    (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+    (setq doom-themes-treemacs-theme "doom-tommorrow-night") ; use "doom-colors" for less minimal icon theme
     (doom-themes-treemacs-config)
     ;; Corrects (and improves) org-mode's native fontification.
     (doom-themes-org-config))
@@ -159,6 +173,8 @@ Tabline-esque package for Emacs.
       (setq centaur-tabs-set-icons t)
       (setq centaur-tabs-style "bar")
       (setq centaur-tabs-height 32)
+      (setq centaur-tabs-set-modified-marker t)
+      (setq centaur-tabs-show-navigation-buttons t)
       (setq centaur-tabs-set-bar 'left)
       (setq centaur-tabs-gray-out-icons 'buffer)
     :bind
@@ -287,7 +303,7 @@ Tabline-esque package for Emacs.
 
 ** Language Server Protocol Related
 
-** Eglot
+*** Eglot
 
 #+begin_src emacs-lisp
 
@@ -295,6 +311,15 @@ Tabline-esque package for Emacs.
     ; this'll work for now, but should have a language specific list.
     :hook (prog-mode . eglot-ensure))
 
+#+end_src
+
+** Solaire Mode 
+
+Because it looks strange for the file buffer to be the same color as everything else.
+
+#+begin_src emacs-lisp
+  (use-package solaire-mode
+    :init (setq solaire-mode-remap-fringe t) (solaire-global-mode +1))
 #+end_src
 
 * Language Specific
